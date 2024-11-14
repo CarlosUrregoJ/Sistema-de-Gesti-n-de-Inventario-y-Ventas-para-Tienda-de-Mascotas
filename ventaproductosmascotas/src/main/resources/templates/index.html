@@ -1,4 +1,4 @@
-gi<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -21,10 +21,12 @@ gi<!DOCTYPE html>
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             max-width: 800px;
             margin: auto;
             padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
         }
         .button {
             background-color: #4CAF50;
@@ -73,6 +75,8 @@ gi<!DOCTYPE html>
             max-width: 600px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             text-align: left;
+            overflow-y: auto; /* Hace la sección desplazable */
+            max-height: 80%; /* Limita la altura máxima */
         }
         .modal-header {
             display: flex;
@@ -91,11 +95,14 @@ gi<!DOCTYPE html>
         .close:hover {
             color: #000;
         }
-        .producto-item {
-            border-bottom: 1px solid #e0e0e0;
-            padding: 10px 0;
+        .modal-body {
+            padding-top: 10px;
         }
-        .producto-item:last-child {
+        .product-item {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        .product-item:last-child {
             border-bottom: none;
         }
     </style>
@@ -112,23 +119,22 @@ gi<!DOCTYPE html>
     <button class="button" onclick="mostrarInfo('juguetes')">Juguetes para Mascotas</button>
     <button class="button" onclick="mostrarInfo('accesorios')">Accesorios para Mascotas</button>
     <button class="button" onclick="mostrarInfo('salud')">Salud y Cuidado</button>
-    <button class="button" onclick="window.location.href='agregar_producto.html'">Agregar Producto</button>
-</div>
-
-<!-- Modal para mostrar productos -->
-<div id="modalProductos" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Productos</h2>
-            <span class="close" onclick="cerrarModal()">&times;</span>
-        </div>
-        <div id="productosLista"></div>
-    </div>
+    <button class="button" onclick="window.location.href='/api/mascotas/login'">Iniciar Sesión</button>
 </div>
 
 <footer>
     <p>&copy; 2024 Tienda de Productos para Mascotas</p>
 </footer>
+
+<div class="modal" id="modalProductos">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Productos</h2>
+            <span class="close" onclick="cerrarModal('modalProductos')">&times;</span>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
 
 <script>
     async function mostrarInfo(categoria) {
@@ -136,24 +142,23 @@ gi<!DOCTYPE html>
             const response = await fetch(`/api/mascotas/categoria?categoria=${categoria}`);
             if (response.ok) {
                 const productos = await response.json();
-                const productosLista = document.getElementById("productosLista");
-                productosLista.innerHTML = ""; // Limpiar contenido previo
+                const modalBody = document.getElementById("modalBody");
+                modalBody.innerHTML = ''; // Limpia la lista anterior
                 if (productos.length === 0) {
-                    productosLista.innerHTML = `<p>No se encontraron productos en la categoría "${categoria}".</p>`;
+                    alert(`No se encontraron productos en la categoría "${categoria}".`);
                 } else {
                     productos.forEach(producto => {
-                        const productoItem = document.createElement("div");
-                        productoItem.classList.add("producto-item");
-                        productoItem.innerHTML = `
-                            <h3>${producto.nombre}</h3>
-                            <p>Precio: $${producto.precio}</p>
-                            <p>Descripción: ${producto.descripcion}</p>
+                        modalBody.innerHTML += `
+                            <div class="product-item">
+                                <h3>${producto.nombre}</h3>
+                                <p><strong>ID:</strong> ${producto.id}</p>
+                                <p><strong>Precio:</strong> $${producto.precio}</p>
+                                <p><strong>Descripción:</strong> ${producto.descripcion}</p>
+                            </div>
                         `;
-                        productosLista.appendChild(productoItem);
                     });
+                    abrirModal('modalProductos');
                 }
-                // Mostrar el modal
-                document.getElementById("modalProductos").style.display = "flex";
             } else {
                 alert("No se encontraron productos en esta categoría.");
             }
@@ -163,14 +168,16 @@ gi<!DOCTYPE html>
         }
     }
 
-    // Función para cerrar el modal
-    function cerrarModal() {
-        document.getElementById("modalProductos").style.display = "none";
+    function abrirModal(modalId) {
+        document.getElementById(modalId).style.display = "flex";
     }
 
-    // Cerrar el modal si se hace clic fuera de él
+    function cerrarModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+    }
+
     window.onclick = function(event) {
-        const modal = document.getElementById("modalProductos");
+        const modal = document.getElementById('modalProductos');
         if (event.target === modal) {
             modal.style.display = "none";
         }
