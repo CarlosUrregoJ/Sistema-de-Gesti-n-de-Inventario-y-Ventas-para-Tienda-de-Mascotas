@@ -110,7 +110,8 @@
       <option value="accesorios">Accesorios</option>
       <option value="salud">Salud y Cuidado</option>
     </select>
-    <input type="number" id="precio" placeholder="Precio" step="0.01" required>
+    <input type="number" id="cantidad" placeholder="Cantidad" step="1" min="0" required>
+    <input type="number" id="precio" placeholder="Precio" step="0.01" min="0" required>
     <textarea id="descripcion" placeholder="Descripción del Producto" required></textarea>
     <button type="submit" class="button">Agregar Producto</button>
   </form>
@@ -156,10 +157,11 @@
 
       const nombre = document.getElementById("nombre").value;
       const categoria = document.getElementById("categoria").value;
+      const cantidad = parseInt(document.getElementById("cantidad").value);
       const precio = parseFloat(document.getElementById("precio").value);
       const descripcion = document.getElementById("descripcion").value;
 
-      const nuevoProducto = { nombre, categoria, precio, descripcion };
+      const nuevoProducto = { nombre, categoria, cantidad, precio, descripcion };
 
       try {
           const response = await fetch("/api/mascotas", {
