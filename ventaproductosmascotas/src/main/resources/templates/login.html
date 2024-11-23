@@ -94,10 +94,30 @@
         if (username === 'admin' && password === 'admin123') {
             window.location.href = '/api/mascotas/administrar_productos';
         } else {
-            alert('Credenciales incorrectas. Intenta de nuevo.');
+            // Hacer una solicitud AJAX para verificar el usuario y la contraseña en la base de datos
+            fetch('/api/admins/validar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/api/mascotas/administrar_productos_admins';
+                } else {
+                    alert('Credenciales incorrectas. Intenta de nuevo.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al verificar las credenciales.');
+            });
         }
         return false; // Prevent form from submitting to keep the logic client-side
     }
 </script>
+
 </body>
 </html>

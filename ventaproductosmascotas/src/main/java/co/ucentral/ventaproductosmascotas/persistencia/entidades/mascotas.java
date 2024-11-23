@@ -13,6 +13,7 @@ public class mascotas {
     private Long id;
     private String nombre;
     private String categoria;
+    private int cantidad;
     private double precio;
     private String descripcion;
 
@@ -21,9 +22,10 @@ public class mascotas {
     }
 
     // Constructor con parámetros
-    public mascotas(String nombre, String categoria, double precio, String descripcion) {
+    public mascotas(String nombre, String categoria, int cantidad, double precio, String descripcion) {
         this.nombre = nombre;
         this.categoria = categoria;
+        this.cantidad = cantidad;
         this.precio = precio;
         this.descripcion = descripcion;
     }
@@ -51,6 +53,14 @@ public class mascotas {
 
     public void setCategoria(String categoria) {
         this.categoria = categoria;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad= cantidad;
     }
 
     public double getPrecio() {
