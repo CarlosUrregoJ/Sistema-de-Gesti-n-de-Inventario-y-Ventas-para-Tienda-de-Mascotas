@@ -11,12 +11,14 @@
             padding: 0;
             background-color: #f0f0f0;
         }
+
         header {
             background-color: #4CAF50;
             color: white;
             padding: 15px;
             text-align: center;
         }
+
         .container {
             display: flex;
             flex-direction: column;
@@ -28,6 +30,7 @@
             background-color: #ffffff;
             border: 1px solid #ccc;
         }
+
         .button {
             background-color: #4CAF50;
             color: white;
@@ -41,9 +44,11 @@
             max-width: 300px;
             transition: background-color 0.3s;
         }
+
         .button:hover {
             background-color: #45a049;
         }
+
         footer {
             position: fixed;
             left: 0;
@@ -54,8 +59,8 @@
             background-color: #4CAF50;
             color: white;
         }
-        /* Estilos del modal */
-        .modal {
+
+        .modal-producto {
             display: none;
             position: fixed;
             z-index: 1;
@@ -67,7 +72,9 @@
             align-items: center;
             justify-content: center;
         }
-        .modal-content {
+
+        .modal-producto-content {
+            position: relative;
             background-color: white;
             padding: 20px;
             border-radius: 10px;
@@ -75,33 +82,114 @@
             max-width: 600px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             text-align: left;
-            overflow-y: auto; /* Hace la sección desplazable */
-            max-height: 80%; /* Limita la altura máxima */
+            overflow-y: auto;
+            max-height: 80%;
         }
-        .modal-header {
+
+        .modal-producto-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .modal-header h2 {
+
+        .modal-producto-header h2 {
             margin: 0;
             color: #4CAF50;
         }
-        .close {
+
+        .close-producto {
+            font-size: 24px;
+            cursor: pointer;
+            color: #aaa;
+            font-weight: bold;
+            position: absolute;
+            right: 15px;
+            top: 15px;
+        }
+
+        .close-producto:hover {
+            color: #000;
+        }
+
+        .modal-alerta {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-alerta-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: auto;
+            min-width: 40%;
+            max-width: 80%;
+            max-height: 80vh;
+            text-align: center;
+            white-space: nowrap;
+            overflow-x: auto;
+            overflow-y: auto;
+        }
+
+        .modal-alerta-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            padding-right: 10px 20px;
+        }
+
+        .modal-alerta-header h2 {
+            margin: 0;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .modal-alerta-content p {
+            display: inline;
+            margin: 0 10px;
+        }
+
+        .modal-alerta-content p:not(:last-child)::after {
+            content: "|";
+            margin-left: 10px;
+        }
+
+        .modal-alerta-content div {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .close-alerta {
+            position: absolute;
+            right: 1px;
+            top: -10px;
             font-size: 24px;
             cursor: pointer;
             color: #aaa;
         }
-        .close:hover {
+
+        .close-alerta:hover {
             color: #000;
         }
+
         .modal-body {
             padding-top: 10px;
         }
+
         .product-item {
             padding: 10px;
             border-bottom: 1px solid #ccc;
         }
+
         .product-item:last-child {
             border-bottom: none;
         }
@@ -126,15 +214,26 @@
     <p>&copy; 2024 Tienda de Productos para Mascotas</p>
 </footer>
 
-<div class="modal" id="modalProductos">
-    <div class="modal-content">
-        <div class="modal-header">
+<div class="modal modal-alerta" id="modalAlerta">
+    <div class="modal-alerta-content">
+        <div class="modal-alerta-header">
             <h2>Productos</h2>
-            <span class="close" onclick="cerrarModal('modalProductos')">&times;</span>
+            <span class="close close-alerta" onclick="cerrarModal('modalAlerta')">&times;</span>
         </div>
-        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-body" id="mensajesmodal"></div>
     </div>
 </div>
+
+<div class="modal modal-producto" id="modalProducto">
+    <div class="modal-producto-content">
+        <div class="modal-producto-header">
+            <h2>Productos</h2>
+            <span class="close close-producto" onclick="cerrarModal('modalProducto')">&times;</span>
+        </div>
+        <div class="modal-body" id="productosmodal"></div>
+    </div>
+</div>
+
 
 <script>
     async function mostrarInfo(categoria) {
@@ -142,10 +241,11 @@
             const response = await fetch(`/api/mascotas/categoria?categoria=${categoria}`);
             if (response.ok) {
                 const productos = await response.json();
-                const modalBody = document.getElementById("modalBody");
-                modalBody.innerHTML = ''; // Limpia la lista anterior
+                const modalBody = document.getElementById("productosmodal");
+                modalBody.innerHTML = '';
                 if (productos.length === 0) {
-                    alert(`No se encontraron productos en la categoría "${categoria}".`);
+                    document.getElementById("mensajesmodal").innerHTML = `No se encontraron productos en la categoría "${categoria}".`;
+                    abrirModal('modalAlerta');
                 } else {
                     productos.forEach(producto => {
                         modalBody.innerHTML += `
@@ -158,14 +258,16 @@
                             </div>
                         `;
                     });
-                    abrirModal('modalProductos');
+                    abrirModal('modalProducto');
                 }
             } else {
-                alert("No se encontraron productos en esta categoría.");
+                document.getElementById("mensajesmodal").innerHTML = "No se encontraron productos en esta categoría.";
+                abrirModal('modalAlerta');
             }
         } catch (error) {
             console.error("Error al obtener la información:", error);
-            alert("Hubo un error al obtener la información. Inténtalo de nuevo.");
+            document.getElementById("mensajesmodal").innerHTML = "Hubo un error al obtener la información. Inténtalo de nuevo.";
+            abrirModal('modalAlerta');
         }
     }
 
@@ -177,12 +279,14 @@
         document.getElementById(modalId).style.display = "none";
     }
 
-    window.onclick = function(event) {
-        const modal = document.getElementById('modalProductos');
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    }
+    window.onclick = function (event) {
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            if (event.target === modal) {
+                cerrarModal(modal.id);
+            }
+        });
+    };
 </script>
 
 </body>
