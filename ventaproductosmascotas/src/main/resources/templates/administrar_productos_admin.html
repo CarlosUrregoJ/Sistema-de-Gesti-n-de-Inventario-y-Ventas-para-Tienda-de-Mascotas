@@ -269,280 +269,228 @@
 
 <script>
 
+    // *** VALIDACIONES Y UTILIDADES ***
     function validarYEjecutar(event, callback, skipValidation = false) {
-      event.preventDefault(); // Evita el comportamiento predeterminado del formulario
-      const userIDField = document.getElementById('userID'); // Obtén el campo del usuario
+        event.preventDefault(); // Evita el comportamiento predeterminado del formulario
+        const userIDField = document.getElementById('userID');
 
-      if (!skipValidation) { // Si no queremos omitir la validación
-          const userID = userIDField.value.trim(); // Verifica el valor del campo
-          if (!userID) { // Si el campo está vacío
-              userIDField.setCustomValidity("Por favor, ingrese un ID de usuario."); // Mensaje personalizado
-              userIDField.reportValidity(); // Muestra el mensaje al usuario
-              return; // Detén la ejecución
-          }
-          userIDField.setCustomValidity(""); // Restablece el mensaje si ya se llenó correctamente
-      }
+        if (!skipValidation) {
+            const userID = userIDField.value.trim();
+            if (!userID) {
+                userIDField.setCustomValidity("Por favor, ingrese un ID de usuario.");
+                userIDField.reportValidity();
+                return;
+            }
+            userIDField.setCustomValidity("");
+        }
 
-      callback(); // Llama a la función correspondiente
-      }
+        callback();
+    }
 
-      // Asocia el evento al botón "Ver usuario admin"
-      document.getElementById("botonVerusuario").addEventListener('click', function (event) {
-          validarYEjecutar(event, verUsuarioAdmin); // Valida y ejecuta la función
-      });
+    function abrirModal(modalId) {
+        document.getElementById(modalId).style.display = "flex";
+    }
 
-      document.getElementById("botonVerallusuarios").addEventListener('click', function (event) {
-          event.preventDefault(); // Evita el comportamiento predeterminado del formulario
-          verTodosLosUsuariosAdmin(); // Llama a la función que muestra todos los administradores
-      });
+    function cerrarModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+    }
 
-      // Función para mostrar la ventana modal
-      function abrirModal(modalId) {
-          document.getElementById(modalId).style.display = "flex";
-      }
+    // Controla el cierre del modal al hacer clic fuera del contenido
+    window.onclick = function (event) {
+        const modal = document.getElementById('modalAdmin');
+        if (event.target === modal) {
+            cerrarModal('modalAdmin');
+        }
+    };
 
-      // Función para cerrar la ventana modal
-      function cerrarModal(modalId) {
-          document.getElementById(modalId).style.display = "none";
-      }
-
-      // Controla el cierre del modal al hacer clic fuera del contenido
-      window.onclick = function(event) {
-          const modal = document.getElementById('modalAdmin');
-          if (event.target === modal) {
-              cerrarModal('modalAdmin');
-          }
-      }
-
-      // Event handler para obtener la información del admin y mostrarla en el modal
-      async function verUsuarioAdmin(event) {
-          event.preventDefault();
-          const userID = document.getElementById("userID").value;
-
-          try {
-              const response = await fetch(`/api/admins/${userID}`, {
-                  method: "GET"
-              });
-
-              if (response.ok) {
-                  const data = await response.json();
-                  const adminInfo = document.getElementById("adminInfo");
-                  adminInfo.innerHTML = `<span><strong>ID:</strong> ${data.id} - <strong>Username: </strong>${data.username} - <strong>Password: </strong>${data.password}</span>`;
-                  abrirModal('modalAdmin');
-              } else {
-                  document.getElementById("adminInfo").innerHTML = "Admin no encontrado o error en la búsqueda.";
-                  abrirModal('modalAdmin');
-              }
-          } catch (error) {
-              console.error("Error al buscar el admin:", error);
-              document.getElementById("adminInfo").innerHTML = "Hubo un error al buscar el admin. Inténtalo de nuevo.";
-              abrirModal('modalAdmin');
-          }
-      }
-
-      document.getElementById("botonVerusuario").addEventListener('click', verUsuarioAdmin);
-
-
-      async function verTodosLosUsuariosAdmin() {
-      try {
-          const response = await fetch('/api/admins', {
-              method: 'GET'
-          });
-          if (response.ok) {
-              const admins = await response.json();
-              // Generar el contenido de los administradores sin espacio vacío innecesario
-              let resultado = admins.map(admin =>
-                  `<div class="admin-entry"><strong>ID:</strong> ${admin.id} | <strong>Username:</strong> ${admin.username} | <strong>Password:</strong> ${admin.password}</div>`
-              ).join(""); // Une los elementos sin espacios adicionales
-
-              const adminInfo = document.getElementById("adminInfo");
-              adminInfo.innerHTML = resultado;
-              abrirModal('modalAdmin');
-          } else {
-              const adminInfo = document.getElementById("adminInfo");
-              adminInfo.innerHTML = "Error al obtener los admins.";
-              abrirModal('modalAdmin');
-          }
-      } catch (error) {
-          //console.error("Error al obtener los admins:", error);
-          const adminInfo = document.getElementById("adminInfo");
-          adminInfo.innerHTML = "Hubo un error al obtener los admins. Inténtalo de nuevo.";
-          abrirModal('modalAdmin');
-      }
-  }
-
-      document.getElementById("botonVerallusuarios").addEventListener('click', verTodosLosUsuariosAdmin);
-
-        async function eliminarAdmin(event) {
-        event.preventDefault();
-        const adminID = document.getElementById("userID").value;
+    // *** FUNCIONES DE ADMINISTRADORES ***
+    async function verUsuarioAdmin() {
+        const userID = document.getElementById("userID").value;
 
         try {
-            const response = await fetch(`/api/admins/${adminID}`, {
-                method: 'DELETE'
-            });
-
-            const message = await response.text();  // Asegúrate de extraer el mensaje como texto
+            const response = await fetch(`/api/admins/${userID}`, { method: "GET" });
 
             const adminInfo = document.getElementById("adminInfo");
             if (response.ok) {
-                adminInfo.innerHTML = message;  // Usa el mensaje del servidor
-                abrirModal('modalAdmin');
+                const data = await response.json();
+                adminInfo.innerHTML = `<span><strong>ID:</strong> ${data.id} - <strong>Username:</strong> ${data.username} - <strong>Password:</strong> ${data.password}</span>`;
             } else {
-                //adminInfo.innerHTML = "Admin no encontrado o error en la búsqueda: " + message;
                 adminInfo.innerHTML = "Admin no encontrado o error en la búsqueda.";
-                abrirModal('modalAdmin');
             }
+            abrirModal('modalAdmin');
         } catch (error) {
-            console.error("Error al eliminar el admin:", error);
-            const adminInfo = document.getElementById("adminInfo");
-            adminInfo.innerHTML = "Hubo un error al eliminar el admin. Inténtalo de nuevo.";
+            console.error("Error al buscar el admin:", error);
+            document.getElementById("adminInfo").innerHTML = "Hubo un error al buscar el admin. Inténtalo de nuevo.";
             abrirModal('modalAdmin');
         }
     }
 
-    // Asumiendo que tienes un botón con id 'botonEliminarusuario'
+    async function verTodosLosUsuariosAdmin() {
+        try {
+            const response = await fetch('/api/admins', { method: 'GET' });
+
+            const adminInfo = document.getElementById("adminInfo");
+            if (response.ok) {
+                const admins = await response.json();
+                adminInfo.innerHTML = admins.map(admin =>
+                    `<div class="admin-entry"><strong>ID:</strong> ${admin.id} | <strong>Username:</strong> ${admin.username} | <strong>Password:</strong> ${admin.password}</div>`
+                ).join("");
+            } else {
+                adminInfo.innerHTML = "Error al obtener los admins.";
+            }
+            abrirModal('modalAdmin');
+        } catch (error) {
+            console.error("Error al obtener los admins:", error);
+            document.getElementById("adminInfo").innerHTML = "Hubo un error al obtener los admins. Inténtalo de nuevo.";
+            abrirModal('modalAdmin');
+        }
+    }
+
+    async function agregarAdmin(event) {
+        event.preventDefault();
+
+        const username = document.getElementById("Usernameadd").value;
+        const password = document.getElementById("Passwordadd").value;
+
+        try {
+            const response = await fetch("/api/admins", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
+
+            const adminInfo = document.getElementById("adminInfo");
+            if (response.ok) {
+                adminInfo.innerHTML = "Admin agregado exitosamente.";
+            } else {
+                const data = await response.json();
+                adminInfo.innerHTML = "Error al agregar el admin: " + data.message;
+            }
+            abrirModal('modalAdmin');
+            document.getElementById("formAgregaradmin").reset();
+        } catch (error) {
+            console.error("Error al agregar el admin:", error);
+            document.getElementById("adminInfo").innerHTML = "Hubo un error al agregar el admin. Inténtalo de nuevo.";
+            abrirModal('modalAdmin');
+        }
+    }
+
+    async function eliminarAdmin(event) {
+        event.preventDefault();
+        const adminID = document.getElementById("userID").value;
+
+        try {
+            const response = await fetch(`/api/admins/${adminID}`, { method: 'DELETE' });
+
+            const adminInfo = document.getElementById("adminInfo");
+            if (response.ok) {
+                adminInfo.innerHTML = await response.text();
+            } else {
+                adminInfo.innerHTML = "Admin no encontrado o error en la búsqueda.";
+            }
+            abrirModal('modalAdmin');
+        } catch (error) {
+            console.error("Error al eliminar el admin:", error);
+            document.getElementById("adminInfo").innerHTML = "Hubo un error al eliminar el admin. Inténtalo de nuevo.";
+            abrirModal('modalAdmin');
+        }
+    }
+
+    // *** FUNCIONES DE PRODUCTOS ***
+    async function agregarProducto(event) {
+        event.preventDefault();
+
+        const nuevoProducto = {
+            nombre: document.getElementById("nombre").value,
+            categoria: document.getElementById("categoria").value,
+            cantidad: parseInt(document.getElementById("cantidad").value),
+            precio: parseFloat(document.getElementById("precio").value),
+            descripcion: document.getElementById("descripcion").value
+        };
+
+        try {
+            const response = await fetch("/api/mascotas", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(nuevoProducto)
+            });
+
+            const productosInfo = document.getElementById("productosInfo");
+            if (response.ok) {
+                productosInfo.innerHTML = "Producto agregado exitosamente.";
+            } else {
+                productosInfo.innerHTML = "Error al agregar el producto.";
+            }
+            abrirModal('modalProductos');
+            document.getElementById("formProducto").reset();
+        } catch (error) {
+            console.error("Error al agregar el producto:", error);
+            document.getElementById("productosInfo").innerHTML = "Hubo un error al agregar el producto. Inténtalo de nuevo.";
+            abrirModal('modalProductos');
+        }
+    }
+
+    async function modificarProducto(event) {
+        event.preventDefault();
+
+        const productoID = document.getElementById("modificarProductoID").value;
+        const datosModificados = {};
+
+        ["modificarNombre", "modificarCategoria", "modificarCantidad", "modificarPrecio", "modificarDescripcion"].forEach(field => {
+            const value = document.getElementById(field).value;
+            if (value) datosModificados[field.replace("modificar", "").toLowerCase()] = isNaN(value) ? value : parseFloat(value);
+        });
+
+        try {
+            const response = await fetch(`/api/mascotas/${productoID}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(datosModificados)
+            });
+
+            const productosInfo = document.getElementById("productosInfo");
+            if (response.ok) {
+                productosInfo.innerHTML = "Producto modificado exitosamente.";
+            } else {
+                productosInfo.innerHTML = "Error al modificar el producto. Verifica el ID y los datos ingresados.";
+            }
+            abrirModal('modalProductos');
+            document.getElementById("formModificarProducto").reset();
+        } catch (error) {
+            console.error("Error al modificar el producto:", error);
+            document.getElementById("productosInfo").innerHTML = "Hubo un error al modificar el producto. Inténtalo de nuevo.";
+            abrirModal('modalProductos');
+        }
+    }
+
+    async function eliminarProducto(event) {
+        event.preventDefault();
+
+        const productoID = document.getElementById("productoID").value;
+
+        try {
+            const response = await fetch(`/api/mascotas/${productoID}`, { method: "DELETE" });
+
+            const productosInfo = document.getElementById("productosInfo");
+            if (response.ok) {
+                productosInfo.innerHTML = "Producto eliminado exitosamente.";
+            } else {
+                productosInfo.innerHTML = "Error al eliminar el producto. Verifica el ID.";
+            }
+            abrirModal('modalProductos');
+            document.getElementById("formEliminarProducto").reset();
+        } catch (error) {
+            console.error("Error al eliminar el producto:", error);
+            document.getElementById("productosInfo").innerHTML = "Hubo un error al eliminar el producto. Inténtalo de nuevo.";
+            abrirModal('modalProductos');
+        }
+    }
+
+    // *** EVENT LISTENERS ***
+    document.getElementById("botonVerusuario").addEventListener('click', (event) => validarYEjecutar(event, verUsuarioAdmin));
+    document.getElementById("botonVerallusuarios").addEventListener('click', (event) => validarYEjecutar(event, verTodosLosUsuariosAdmin, true));
     document.getElementById("botonEliminarusuario").addEventListener('click', eliminarAdmin);
-
-      async function agregarProducto(event) {
-          event.preventDefault();
-
-          const nombre = document.getElementById("nombre").value;
-          const categoria = document.getElementById("categoria").value;
-          const cantidad = parseInt(document.getElementById("cantidad").value);
-          const precio = parseFloat(document.getElementById("precio").value);
-          const descripcion = document.getElementById("descripcion").value;
-
-          const nuevoProducto = { nombre, categoria, cantidad, precio, descripcion };
-
-          try {
-              const response = await fetch("/api/mascotas", {
-                  method: "POST",
-                  headers: {
-                      "Content-Type": "application/json"
-                  },
-                  body: JSON.stringify(nuevoProducto)
-              });
-
-              if (response.ok) {
-                  //alert("Producto agregado exitosamente");
-                  productosInfo.innerHTML = "Producto agregado exitosamente.";
-                  abrirModal('modalProductos');
-
-                  document.getElementById("formProducto").reset();
-
-              } else {
-                  productosInfo.innerHTML = "Error al agregar el producto.";
-                  abrirModal('modalProductos');
-              }
-          } catch (error) {
-              //console.error("Error al agregar el producto:", error);
-              productosInfo.innerHTML = "Hubo un error al agregar el producto. Inténtalo de nuevo.";
-              abrirModal('modalProductos');
-          }
-      }
-
-      async function modificarProducto(event) {
-          event.preventDefault();
-
-          const productoID = document.getElementById("modificarProductoID").value;
-          const nombre = document.getElementById("modificarNombre").value;
-          const categoria = document.getElementById("modificarCategoria").value;
-          const cantidad = document.getElementById("modificarCantidad").value;
-          const precio = document.getElementById("modificarPrecio").value;
-          const descripcion = document.getElementById("modificarDescripcion").value;
-
-          const datosModificados = {};
-          if (nombre) datosModificados.nombre = nombre;
-          if (categoria) datosModificados.categoria = categoria;
-          if (cantidad) datosModificados.cantidad = parseInt(cantidad)
-          if (precio) datosModificados.precio = parseFloat(precio);
-          if (descripcion) datosModificados.descripcion = descripcion;
-
-          try {
-              const response = await fetch(`/api/mascotas/${productoID}`, {
-                  method: "PUT",
-                  headers: {
-                      "Content-Type": "application/json"
-                  },
-                  body: JSON.stringify(datosModificados)
-              });
-
-              if (response.ok) {
-                  //alert("Producto modificado exitosamente");
-                  productosInfo.innerHTML = "Producto modificado exitosamente.";
-                  abrirModal('modalProductos');
-                  document.getElementById("formModificarProducto").reset();
-              } else {
-                  productosInfo.innerHTML = "Error al modificar el producto. Verifica el ID y los datos ingresados.";
-                  abrirModal('modalProductos');
-              }
-          } catch ( error) {
-              //console.error("Error al modificar el producto:", error);
-              productosInfo.innerHTML = "Hubo un error al modificar el producto. Inténtalo de nuevo.";
-              abrirModal('modalProductos');
-          }
-      }
-
-      async function eliminarProducto(event) {
-          event.preventDefault();
-
-          const productoID = document.getElementById("productoID").value;
-
-          try {
-              const response = await fetch(`/api/mascotas/${productoID}`, {
-                  method: "DELETE",
-                  headers: {
-                      "Content-Type": "application/json"
-                  }
-              });
-
-              if (response.ok) {
-                  //alert("Producto eliminado exitosamente");
-                  productosInfo.innerHTML = "Producto eliminado exitosamente.";
-                  abrirModal('modalProductos');
-                  document.getElementById("formEliminarProducto").reset();
-              } else {
-                  productosInfo.innerHTML = "Error al eliminar el producto. Verifica el ID.";
-                  abrirModal('modalProductos');
-              }
-          } catch (error) {
-              //console.error("Error al eliminar el producto:", error);
-              productosInfo.innerHTML = "Hubo un error al eliminar el producto. Inténtalo de nuevo.";
-              abrirModal('modalProductos');
-          }
-      }
-
-      async function agregarAdmin(event) {
-          event.preventDefault();
-
-          const username = document.getElementById("Usernameadd").value;
-          const password = document.getElementById("Passwordadd").value;
-
-          try {
-              const response = await fetch("/api/admins", {
-                  method: "POST",
-                  headers: {
-                      "Content-Type": "application/json"
-                  },
-                  body: JSON.stringify({ username, password })
-              });
-
-              if (response.ok) {
-                  alert("Admin agregado exitosamente");
-                  document.getElementById("formAgregaradmin").reset();
-              } else {
-                  // Suponiendo que el servidor envía un mensaje en caso de error
-                  const data = await response.json();
-                  alert("Error al agregar el admin: " + data.message);
-              }
-          } catch (error) {
-              console.error("Error al agregar el admin:", error);
-              alert("Hubo un error al agregar el admin. Inténtalo de nuevo.");
-          }
-      }
-
-
+    
 </script>
 
 </body>
