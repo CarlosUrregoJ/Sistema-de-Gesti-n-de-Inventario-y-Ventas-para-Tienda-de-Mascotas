@@ -110,4 +110,19 @@ public class mascotasControlador {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar el producto: " + e.getMessage());
         }
     }
+
+    // Método GET para buscar productos por nombre flexible
+    @GetMapping("/buscar")
+    @ResponseBody
+    public ResponseEntity<?> buscarMascotasPorNombre(@RequestParam String nombre) {
+        try {
+            List<mascotas> productos = mascotasRepositorio.findByNombreContaining(nombre);
+            if (productos.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron productos que coincidan con el término: " + nombre);
+            }
+            return ResponseEntity.ok(productos);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al buscar productos: " + e.getMessage());
+        }
+    }
 }

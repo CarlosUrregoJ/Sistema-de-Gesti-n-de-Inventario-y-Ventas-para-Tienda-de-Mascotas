@@ -27,6 +27,7 @@
             max-width: 800px;
             margin: auto;
             padding: 20px;
+            padding-bottom: 100px; /* Añade suficiente espacio para que el contenido no sea tapado */
             background-color: #ffffff;
             border: 1px solid #ccc;
         }
@@ -193,6 +194,40 @@
         .product-item:last-child {
             border-bottom: none;
         }
+
+        /* Estilo para el contenedor de la barra de búsqueda */
+        .search-container {
+            display: flex;
+            justify-content: center; /* Centra los elementos horizontalmente */
+            align-items: center; /* Centra los elementos verticalmente */
+            margin-top: 20px; /* Añade espacio en la parte superior */
+            margin-bottom: 20px; /* Añade espacio en la parte inferior */
+            width: 100%; /* Ocupa el ancho total disponible */
+        }
+
+        /* Estilo para el campo de entrada de búsqueda */
+        #searchInput {
+            padding: 10px;
+            width: 70%; /* Ajusta el ancho del campo de texto */
+            margin-right: 5px; /* Espacio entre el campo de texto y el botón */
+            border: 2px solid #ccc; /* Agrega un borde más definido */
+            border-radius: 5px; /* Bordes redondeados */
+        }
+
+        /* Estilo para el botón de búsqueda */
+        .button-busqueda {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s; /* Transición suave del color de fondo */
+        }
+
+        .button-busqueda:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -200,6 +235,11 @@
 <header>
     <h1>Tienda de Productos para Mascotas</h1>
 </header>
+
+<div class="search-container">
+    <input type="text" id="searchInput" placeholder="Buscar productos...">
+    <button class="button-busqueda" onclick="buscarProducto()">Buscar</button>
+</div>
 
 <div class="container">
     <h2>Selecciona una Categoría de Producto</h2>
@@ -236,6 +276,55 @@
 
 
 <script>
+    async function buscarProducto() {
+        const input = document.getElementById('searchInput').value.trim(); // Asegura que no haya espacios innecesarios
+        if (input === '') {
+            document.getElementById("mensajesmodal").innerHTML = "Por favor, escribe algo para buscar.";
+            abrirModal('modalAlerta');
+            return;
+        }
+
+        try {
+            // Llama al backend para buscar productos que coincidan parcialmente con el nombre
+            const response = await fetch(`/api/mascotas/buscar?nombre=${encodeURIComponent(input)}`);
+            const modalBody = document.getElementById("productosmodal");
+            modalBody.innerHTML = ''; // Limpia el contenido previo
+
+            if (response.ok) {
+                const productos = await response.json();
+
+                if (productos.length === 0) {
+                    // Muestra un mensaje si no hay productos
+                    document.getElementById("mensajesmodal").innerHTML = `No se encontraron productos con el término "${input}".`;
+                    abrirModal('modalAlerta');
+                } else {
+                    // Muestra los productos encontrados
+                    productos.forEach(producto => {
+                        modalBody.innerHTML += `
+                            <div class="product-item">
+                                <h3>${producto.nombre}</h3>
+                                <p><strong>ID:</strong> ${producto.id}</p>
+                                <p><strong>Cantidad:</strong> ${producto.cantidad}</p>
+                                <p><strong>Precio:</strong> $${producto.precio.toFixed(2)}</p>
+                                <p><strong>Descripción:</strong> ${producto.descripcion}</p>
+                            </div>
+                        `;
+                    });
+                    abrirModal('modalProducto'); // Abre el modal con los productos
+                }
+            } else {
+                // Maneja errores de la API
+                document.getElementById("mensajesmodal").innerHTML = `No encontramos resultados relacionados con ${input}.`;
+                abrirModal('modalAlerta');
+            }
+        } catch (error) {
+            // Maneja errores de red u otros problemas
+            console.error("Error al buscar el producto:", error);
+            document.getElementById("mensajesmodal").innerHTML = "Hubo un error al buscar el producto. Inténtalo de nuevo.";
+            abrirModal('modalAlerta');
+        }
+    }
+
     async function mostrarInfo(categoria) {
         try {
             const response = await fetch(`/api/mascotas/categoria?categoria=${categoria}`);
