@@ -92,7 +92,7 @@
         const password = document.getElementById('password').value;
 
         if (username === 'admin' && password === 'admin123') {
-            window.location.href = '/api/mascotas/administrar_productos';
+            window.location.href = '/api/mascotas/administrar_productos_admin';
         } else {
             // Hacer una solicitud AJAX para verificar el usuario y la contraseña en la base de datos
             fetch('/api/admins/validar', {

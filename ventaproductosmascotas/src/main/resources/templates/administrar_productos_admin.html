@@ -12,162 +12,160 @@
         }
 
         .modal {
-                display: none;
-                position: fixed;
-                z-index: 1;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, 0.5);
-                align-items: center;
-                justify-content: center;
-            }
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
 
         .modal-content {
-                background-color: #fff;
-                margin: auto; /* Centrado automático para seguridad adicional */
-                padding: 20px;
-                border-radius: 10px;
-                width: auto; /* El ancho se adapta al contenido */
-                min-width: 40%; /* Mínimo ancho del modal */
-                max-width: 80%; /* Máximo ancho para evitar que sea demasiado grande */
-                max-height: 80vh; /* Máxima altura del modal: 80% de la altura de la ventana */
-                text-align: center;
-                white-space: nowrap; /* Evita los saltos de línea */
-                overflow-x: auto; /* Permite desplazamiento horizontal si es necesario */
-                overflow-y: auto; /* Permite desplazamiento vertical si es necesario */
-            }
+            background-color: #fff;
+            margin: auto; /* Centrado automático para seguridad adicional */
+            padding: 20px;
+            border-radius: 10px;
+            width: auto; /* El ancho se adapta al contenido */
+            min-width: 40%; /* Mínimo ancho del modal */
+            max-width: 80%; /* Máximo ancho para evitar que sea demasiado grande */
+            max-height: 80vh; /* Máxima altura del modal: 80% de la altura de la ventana */
+            text-align: center;
+            white-space: nowrap; /* Evita los saltos de línea */
+            overflow-x: auto; /* Permite desplazamiento horizontal si es necesario */
+            overflow-y: auto; /* Permite desplazamiento vertical si es necesario */
+        }
 
-            .modal-header {
+        .modal-header {
             display: flex;
             justify-content: space-between; /* Cambio para ajustar el espacio entre los elementos */
             align-items: center;
             position: relative;
             padding-right: 10px 20px; /* Añadido para asegurar espacio en el borde derecho */
-            }
+        }
 
-            .modal-header h2 {
+        .modal-header h2 {
             margin: 0;
             margin-bottom: 20px; /* Agrega un margen inferior para separar el título del contenido */
             flex-grow: 1;
-            }
+        }
 
-            .modal-content p {
+        .modal-content p {
             display: inline; /* Cambia los elementos <p> a en línea */
             margin: 0 10px; /* Añade márgenes a los lados para separación */
-            }
+        }
 
-            .modal-content p:not(:last-child)::after {
-                content: "|"; /* Inserta un pipe después de cada <p> excepto el último */
-                margin-left: 10px; /* Espacio después del texto antes del pipe */
-            }
+        .modal-content p:not(:last-child)::after {
+            content: "|"; /* Inserta un pipe después de cada <p> excepto el último */
+            margin-left: 10px; /* Espacio después del texto antes del pipe */
+        }
 
-            .modal-content div {
-                padding: 10px; /* Añade algo de padding para una mejor legibilidad */
-                border-bottom: 1px solid #eee; /* Opcional: añade una línea para separar las entradas */
-                /*text-align: left;*/
-            }
+        .modal-content div {
+            padding: 10px; /* Añade algo de padding para una mejor legibilidad */
+            border-bottom: 1px solid #eee; /* Opcional: añade una línea para separar las entradas */
+            /*text-align: left;*/
+        }
 
+        .close {
+            position: absolute;
+            right: 1px; /* Reducido para acercar al borde */
+            top: -10px; /* Ajustado para alinear debajo del borde superior del título */
+            font-size: 24px;
+            cursor: pointer;
+            color: #aaa;
+        }
 
-            .close {
-                position: absolute;
-                right: 1px; /* Reducido para acercar al borde */
-                top: -10px; /* Ajustado para alinear debajo del borde superior del título */
-                font-size: 24px;
-                cursor: pointer;
-                color: #aaa;
-            }
+        .close:hover {
+            color: #000;
+        }
 
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            color: #333;
+            padding-bottom: 60px; /* Espacio adicional para evitar superposición con el footer */
+            padding-top: 20px; /* Asegura espacio uniforme en la parte superior */
+        }
 
-            .close:hover {
-                color: #000;
-            }
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin: 20px auto; /* Espaciado uniforme alrededor de cada contenedor */
+        }
 
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f0f4f8;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                flex-direction: column;
-                min-height: 100vh;
-                color: #333;
-                padding-bottom: 60px; /* Espacio adicional para evitar superposición con el footer */
-                padding-top: 20px; /* Asegura espacio uniforme en la parte superior */
-            }
+        h2 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
 
-            .container {
-                max-width: 500px;
-                width: 100%;
-                background-color: #ffffff;
-                border-radius: 10px;
-                padding: 30px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                text-align: center;
-                margin: 20px auto; /* Espaciado uniforme alrededor de cada contenedor */
-            }
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px; /* Margen uniforme para todos los elementos de entrada */
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
 
-            h2 {
-                color: #4CAF50;
-                margin-bottom: 20px;
-            }
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
 
-            input[type="text"],
-            input[type="number"],
-            select,
-            textarea {
-                width: 100%;
-                padding: 15px;
-                margin-bottom: 10px; /* Margen uniforme para todos los elementos de entrada */
-                border: 1px solid #ccc;
-                border-radius: 8px;
-                font-size: 16px;
-                box-sizing: border-box;
-                transition: border-color 0.3s;
-            }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
 
-            input[type="text"]:focus,
-            input[type="number"]:focus,
-            select:focus,
-            textarea:focus {
-                border-color: #4CAF50;
-                outline: none;
-            }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            width: 100%;
+            max-width: 300px;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
 
-            textarea {
-                min-height: 100px;
-                resize: vertical;
-            }
+        .button:hover {
+            background-color: #45a049;
+        }
 
-            .button {
-                background-color: #4CAF50;
-                color: white;
-                padding: 15px;
-                border: none;
-                border-radius: 8px;
-                font-size: 18px;
-                cursor: pointer;
-                width: 100%;
-                max-width: 300px;
-                transition: background-color 0.3s;
-                margin-top: 10px;
-                margin-bottom: 10px;
-            }
-
-            .button:hover {
-                background-color: #45a049;
-            }
-
-            footer {
-                width: 100%;
-                text-align: center;
-                padding: 10px 0;
-                background-color: #4CAF50;
-                color: white;
-                position: fixed;
-                bottom: 0;
-            }
+        footer {
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+            background-color: #4CAF50;
+            color: white;
+            position: fixed;
+            bottom: 0;
+        }
     </style>
 </head>
 <body>
@@ -256,6 +254,18 @@
         <div class="modal-body" id="adminInfo"></div>
     </div>
 </div>
+
+<!-- Ventana Modal para Productos -->
+<div class="modal" id="modalProductos">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Información Productos</h2>
+            <span class="close" onclick="cerrarModal('modalProductos')">&times;</span>
+        </div>
+        <div class="modal-body" id="productosInfo"></div>
+    </div>
+</div>
+
 
 <script>
 
@@ -379,7 +389,8 @@
                 adminInfo.innerHTML = message;  // Usa el mensaje del servidor
                 abrirModal('modalAdmin');
             } else {
-                adminInfo.innerHTML = "Admin no encontrado o error en la búsqueda: " + message;
+                //adminInfo.innerHTML = "Admin no encontrado o error en la búsqueda: " + message;
+                adminInfo.innerHTML = "Admin no encontrado o error en la búsqueda.";
                 abrirModal('modalAdmin');
             }
         } catch (error) {
@@ -414,14 +425,20 @@
               });
 
               if (response.ok) {
-                  alert("Producto agregado exitosamente");
+                  //alert("Producto agregado exitosamente");
+                  productosInfo.innerHTML = "Producto agregado exitosamente.";
+                  abrirModal('modalProductos');
+
                   document.getElementById("formProducto").reset();
+
               } else {
-                  alert("Error al agregar el producto.");
+                  productosInfo.innerHTML = "Error al agregar el producto.";
+                  abrirModal('modalProductos');
               }
           } catch (error) {
-              console.error("Error al agregar el producto:", error);
-              alert("Hubo un error al agregar el producto. Inténtalo de nuevo.");
+              //console.error("Error al agregar el producto:", error);
+              productosInfo.innerHTML = "Hubo un error al agregar el producto. Inténtalo de nuevo.";
+              abrirModal('modalProductos');
           }
       }
 
@@ -452,14 +469,18 @@
               });
 
               if (response.ok) {
-                  alert("Producto modificado exitosamente");
+                  //alert("Producto modificado exitosamente");
+                  productosInfo.innerHTML = "Producto modificado exitosamente.";
+                  abrirModal('modalProductos');
                   document.getElementById("formModificarProducto").reset();
               } else {
-                  alert("Error al modificar el producto. Verifica el ID y los datos ingresados.");
+                  productosInfo.innerHTML = "Error al modificar el producto. Verifica el ID y los datos ingresados.";
+                  abrirModal('modalProductos');
               }
           } catch ( error) {
-              console.error("Error al modificar el producto:", error);
-              alert("Hubo un error al modificar el producto. Inténtalo de nuevo.");
+              //console.error("Error al modificar el producto:", error);
+              productosInfo.innerHTML = "Hubo un error al modificar el producto. Inténtalo de nuevo.";
+              abrirModal('modalProductos');
           }
       }
 
@@ -477,14 +498,18 @@
               });
 
               if (response.ok) {
-                  alert("Producto eliminado exitosamente");
+                  //alert("Producto eliminado exitosamente");
+                  productosInfo.innerHTML = "Producto eliminado exitosamente.";
+                  abrirModal('modalProductos');
                   document.getElementById("formEliminarProducto").reset();
               } else {
-                  alert("Error al eliminar el producto. Verifica el ID.");
+                  productosInfo.innerHTML = "Error al eliminar el producto. Verifica el ID.";
+                  abrirModal('modalProductos');
               }
           } catch (error) {
-              console.error("Error al eliminar el producto:", error);
-              alert("Hubo un error al eliminar el producto. Inténtalo de nuevo.");
+              //console.error("Error al eliminar el producto:", error);
+              productosInfo.innerHTML = "Hubo un error al eliminar el producto. Inténtalo de nuevo.";
+              abrirModal('modalProductos');
           }
       }
 

@@ -31,9 +31,9 @@ public class mascotasControlador {
     }
 
     // Método para redirigir a la página de administración de productos
-    @GetMapping("/administrar_productos")
+    @GetMapping("/administrar_productos_admin")
     public String manejarprodcutos() {
-        return "administrar_productos";
+        return "administrar_productos_admin";
     }
 
     @GetMapping("/administrar_productos_admins")
