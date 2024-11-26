@@ -282,7 +282,7 @@
             buscarProducto();         // Llama a la función que ejecuta la búsqueda
         }
     });
-    
+
     async function buscarProducto() {
         const input = document.getElementById('searchInput').value.trim(); // Asegura que no haya espacios innecesarios
         if (input === '') {
@@ -307,15 +307,23 @@
                 } else {
                     // Muestra los productos encontrados
                     productos.forEach(producto => {
-                        modalBody.innerHTML += `
+                        let contenidoProducto = `
                             <div class="product-item">
                                 <h3>${producto.nombre}</h3>
                                 <p><strong>ID:</strong> ${producto.id}</p>
                                 <p><strong>Cantidad:</strong> ${producto.cantidad}</p>
                                 <p><strong>Precio:</strong> $${producto.precio.toFixed(2)}</p>
                                 <p><strong>Descripción:</strong> ${producto.descripcion}</p>
-                            </div>
                         `;
+
+                        // Agregar condición para mostrar aviso de stock bajo si la cantidad es menor o igual a 5
+                        if (producto.cantidad <= 5) {
+                            contenidoProducto += `<p><strong>Stock bajo:</strong> ${producto.cantidad} unidades restantes!</p>`;
+                        }
+
+                        contenidoProducto += `</div>`; // Cerrar el div del producto
+
+                        modalBody.innerHTML += contenidoProducto; // Agregar al contenido del modal
                     });
                     abrirModal('modalProducto'); // Abre el modal con los productos
                 }
@@ -344,15 +352,23 @@
                     abrirModal('modalAlerta');
                 } else {
                     productos.forEach(producto => {
-                        modalBody.innerHTML += `
+                        let contenidoProducto = `
                             <div class="product-item">
                                 <h3>${producto.nombre}</h3>
                                 <p><strong>ID:</strong> ${producto.id}</p>
                                 <p><strong>Cantidad:</strong> ${producto.cantidad}</p>
                                 <p><strong>Precio:</strong> $${producto.precio}</p>
                                 <p><strong>Descripción:</strong> ${producto.descripcion}</p>
-                            </div>
                         `;
+
+                        // Agregar condición para mostrar aviso de stock bajo si la cantidad es menor o igual a 5
+                        if (producto.cantidad <= 5) {
+                            contenidoProducto += `<p><strong>Stock bajo:</strong> ${producto.cantidad} unidades restantes!</p>`;
+                        }
+
+                        contenidoProducto += `</div>`; // Cerrar el div del producto
+
+                        modalBody.innerHTML += contenidoProducto; // Agregar al contenido del modal
                     });
                     abrirModal('modalProducto');
                 }
