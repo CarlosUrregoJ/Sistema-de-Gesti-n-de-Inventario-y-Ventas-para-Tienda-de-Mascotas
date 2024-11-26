@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda de Productos para Mascotas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            width: 100%;
+            max-width: 300px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+        }
+        /* Estilos del modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            overflow-y: auto; /* Hace la sección desplazable */
+            max-height: 80%; /* Limita la altura máxima */
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h2 {
+            margin: 0;
+            color: #4CAF50;
+        }
+        .close {
+            font-size: 24px;
+            cursor: pointer;
+            color: #aaa;
+        }
+        .close:hover {
+            color: #000;
+        }
+        .modal-body {
+            padding-top: 10px;
+        }
+        .product-item {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        .product-item:last-child {
+            border-bottom: none;
+        }
+  <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda de Productos para Mascotas</title>
+    <style>
+        /* Tu estilo original aquí */
+    <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda de Productos para Mascotas</title>
+    <style>
+        /* Tu estilo original aquí */
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda de Productos para Mascotas</title>
+    <style>
+        /* Tu estilo original aquí */
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda de Productos para Mascotas</title>
+    <style>
+        /* Tu estilo original aquí */
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Tienda de Productos para Mascotas</h1>
+</header>
+
+<div class="container">
+    <h2>Selecciona una Acción</h2>
+    <button class="button" onclick="mostrarInfo('comida')">Comida para Mascotas</button>
+    <button class="button" onclick="mostrarInfo('juguetes')">Juguetes para Mascotas</button>
+    <button class="button" onclick="mostrarInfo('accesorios')">Accesorios para Mascotas</button>
+    <button class="button" onclick="mostrarInfo('salud')">Salud y Cuidado</button>
+    <button class="button" onclick="window.location.href='/api/mascotas/login'">Iniciar Sesión</button>
+    <button class="button" onclick="mostrarCarrito()">Ver Carrito</button>
+    <button class="button" onclick="mostrarRecomendaciones()">Ver Recomendaciones</button>
+    <button class="button" onclick="gestionarClientes()">Gestionar Clientes</button>
+</div>
+
+<footer>
+    <p>&copy; 2024 Tienda de Productos para Mascotas</p>
+</footer>
+
+<div class="modal" id="modalProductos">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Productos</h2>
+            <span class="close" onclick="cerrarModal('modalProductos')">&times;</span>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+
+<script>
+    async function mostrarInfo(categoria) {
+        try {
+            const response = await fetch(`/api/mascotas/categoria?categoria=${categoria}`);
+            if (response.ok) {
+                const productos = await response.json();
+                const modalBody = document.getElementById("modalBody");
+                modalBody.innerHTML = ''; // Limpia la lista anterior
+
+                let notificacionStockBajo = false;
+
+                if (productos.length === 0) {
+                    alert(`No se encontraron productos en la categoría "${categoria}".`);
+                } else {
+                    productos.forEach(producto => {
+                        if (producto.cantidad <= 5) {
+                            notificacionStockBajo = true;
+                        }
+                        modalBody.innerHTML += `
+                            <div class="product-item" style="border: ${producto.cantidad <= 5 ? '2px solid red' : '1px solid #ccc'};">
+                                <h3>${producto.nombre}</h3>
+                                <p><strong>ID:</strong> ${producto.id}</p>
+                                <p><strong>Cantidad:</strong> ${producto.cantidad}</p>
+                                <p><strong>Precio:</strong> $${producto.precio}</p>
+                                <p><strong>Descripción:</strong> ${producto.descripcion}</p>
+                                <button class="button" onclick="agregarAlCarrito(${producto.id}, '${producto.nombre}', ${producto.precio})">Comprar</button>
+                            </div>
+                        `;
+                    });
+
+                    if (notificacionStockBajo) {
+                        alert("Alerta: Algunos productos tienen un stock bajo (5 o menos unidades).");
+                    }
+
+                    abrirModal('modalProductos');
+                }
+            } else {
+                alert("No se encontraron productos en esta categoría.");
+            }
+        } catch (error) {
+            console.error("Error al obtener la información:", error);
+            alert("Hubo un error al obtener la información. Inténtalo de nuevo.");
+        }
+    }
+
+    function abrirModal(modalId) {
+        document.getElementById(modalId).style.display = "flex";
+    }
+
+    function cerrarModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
