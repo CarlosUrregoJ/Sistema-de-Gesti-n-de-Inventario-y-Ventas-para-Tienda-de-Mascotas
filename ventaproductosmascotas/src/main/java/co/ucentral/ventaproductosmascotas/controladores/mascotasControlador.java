@@ -18,6 +18,11 @@ public class mascotasControlador {
     @Autowired
     private mascotasRepositorio mascotasRepositorio;
 
+    @GetMapping("/agregarventa")
+    public String manejarventas() {
+        return "agregarventa";
+    }
+
     // Método para devolver la página principal
     @GetMapping("/index")
     public String index() {
@@ -39,6 +44,21 @@ public class mascotasControlador {
     @GetMapping("/administrar_productos_admins")
     public String manejarprodcutosadmins() {
         return "administrar_productos_admins";
+    }
+
+    //Metodo get para obtener todos los productos
+    @GetMapping("/todos")
+    @ResponseBody
+    public ResponseEntity<?> obtenerTodosLosProductos() {
+        try {
+            List<mascotas> productos = mascotasRepositorio.findAll();
+            if (productos.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron productos.");
+            }
+            return ResponseEntity.ok(productos);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener productos: " + e.getMessage());
+        }
     }
 
     // Método GET para obtener productos por categoría específica

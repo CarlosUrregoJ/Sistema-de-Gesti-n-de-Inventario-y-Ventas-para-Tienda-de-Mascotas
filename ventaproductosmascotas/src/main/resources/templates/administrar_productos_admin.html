@@ -235,6 +235,13 @@
     </form>
 </div>
 
+<div class="container" id="container">
+    <h2>Todas las ventas</h2>
+    <form id="formConsultarVentas" onsubmit="consultarVentas(event)">
+        <button class="button" type="submit">Consultar ventas</button>
+    </form>
+</div>
+
 <div class="container">
     <button class="button" onclick="window.location.href='/api/mascotas/index'">Regresar al Inicio</button>
 </div>
@@ -265,8 +272,56 @@
     </div>
 </div>
 
+<!-- Ventana Modal para Ventas -->
+<div class="modal" id="modalVentas">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Información de Ventas</h2>
+            <span class="close" onclick="cerrarModal('modalVentas')">&times;</span>
+        </div>
+        <div class="modal-body" id="ventasInfo"></div>
+    </div>
+</div>
+
 
 <script>
+    function consultarVentas(event) {
+        event.preventDefault(); // Previene la recarga de la página
+
+        fetch('/api/ventas/todas')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch sales: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(ventas => {
+                mostrarVentas(ventas);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al consultar las ventas: ' + error.message);
+            });
+    }
+
+    function mostrarVentas(ventas) {
+        const ventasInfo = document.getElementById("ventasInfo");
+        ventasInfo.innerHTML = ''; // Limpiar contenido previo de la modal
+        if (ventas.length === 0) {
+            ventasInfo.innerHTML = "No hay ventas registradas.";
+        } else {
+            const ventasHTML = ventas.map(venta => `
+                <div class="venta-entry">
+                    <strong>ID de Venta:</strong> ${venta.id} |
+                    <strong>Producto:</strong> ${venta.nombre} |
+                    <strong>Cantidad:</strong> ${venta.cantidad} |
+                    <strong>Fecha y Hora:</strong> ${new Date(venta.fechaHoraVenta).toLocaleString()}
+                </div>
+            `).join("");
+            ventasInfo.innerHTML = ventasHTML;
+        }
+        abrirModal('modalVentas');
+    }
 
     // *** VALIDACIONES Y UTILIDADES ***
     function validarYEjecutar(event, callback, skipValidation = false) {

@@ -228,6 +228,27 @@
         .button-busqueda:hover {
             background-color: #45a049;
         }
+
+        /* Estilos específicos para el botón de inicio de sesión, utilizando nombres únicos */
+        .login-section-top-right {
+            position: absolute; /* Ajustar a 'fixed' si deseas que permanezca fijo en la vista al hacer scroll */
+            top: 20px;
+            right: 40px; /* Aumentado para más separación del borde */
+        }
+
+        .button.login-action-button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #ffffff;
+            color: #333333; /* Texto oscuro para contraste */
+            border: none;
+        }
+
+        .button.login-action-button:hover {
+            background-color: #2C8A43; /* Un tono más oscuro del mismo verde para el efecto hover */
+        }
     </style>
 </head>
 <body>
@@ -247,7 +268,11 @@
     <button class="button" onclick="mostrarInfo('juguetes')">Juguetes para Mascotas</button>
     <button class="button" onclick="mostrarInfo('accesorios')">Accesorios para Mascotas</button>
     <button class="button" onclick="mostrarInfo('salud')">Salud y Cuidado</button>
-    <button class="button" onclick="window.location.href='/api/mascotas/login'">Iniciar Sesión</button>
+    <button class="button" onclick="window.location.href='/api/mascotas/agregarventa'">Agrega nueva venta</button>
+</div>
+
+<div class="login-section-top-right">
+    <button class="button login-action-button" onclick="window.location.href='/api/mascotas/login'">Iniciar sesión</button>
 </div>
 
 <footer>
