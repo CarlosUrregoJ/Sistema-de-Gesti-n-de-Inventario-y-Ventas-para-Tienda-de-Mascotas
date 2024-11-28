@@ -13,8 +13,10 @@ public class ventas {
     // Elimina la propiedad productoId
     private String nombre; // Nombre del producto vendido
     private Integer cantidad; // Cantidad vendida
+    private Float totalventa;
 
     private LocalDateTime fechaHoraVenta; // Fecha y hora de la venta
+
 
     @Transient // Esto indica que este campo no se mapeará en la base de datos
     private Long productoId; // ID del producto vendido
@@ -29,6 +31,14 @@ public class ventas {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Float getTotalventa() {
+        return totalventa;
+    }
+
+    public void setTotalventa(Float totalventa) {
+        this.totalventa = totalventa;
     }
 
     public String getNombre() {

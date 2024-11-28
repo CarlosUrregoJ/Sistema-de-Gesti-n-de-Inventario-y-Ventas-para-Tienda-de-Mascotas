@@ -17,11 +17,21 @@ public class datoscliente {
     private String identificacionCliente; // Identificación del cliente
     private String nombreMascota;      // Nombre de la mascota
     private String razaMascota;        // Raza de la mascota
+    private Integer cantidadCompras;
 
     // Constructor vacío requerido por JPA
     public datoscliente() {}
 
     // Getters y Setters
+    // Getter y Setter para 'cantidadCompras'
+    public Integer getCantidadCompras() {
+        return cantidadCompras;
+    }
+
+    public void setCantidadCompras(Integer cantidadCompras) {
+        this.cantidadCompras = cantidadCompras;
+    }
+
     public Long getId() {
         return id;
     }

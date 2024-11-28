@@ -172,6 +172,80 @@
             padding: 10px 15px;
         }
     }
+
+    .modal-alerta {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-alerta-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: auto;
+            min-width: 40%;
+            max-width: 80%;
+            max-height: 80vh;
+            text-align: center;
+            white-space: nowrap;
+            overflow-x: auto;
+            overflow-y: auto;
+        }
+
+        .modal-alerta-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            padding-right: 10px 20px;
+        }
+
+        .modal-alerta-header h2 {
+            margin: 0;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .modal-alerta-content p {
+            display: inline;
+            margin: 0 10px;
+        }
+
+        .modal-alerta-content p:not(:last-child)::after {
+            content: "|";
+            margin-left: 10px;
+        }
+
+        .modal-alerta-content div {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .close-alerta {
+            position: absolute;
+            right: 1px;
+            top: -10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .close-alerta:hover {
+            color: #000;
+        }
+
+        .modal-body {
+            padding-top: 10px;
+        }
   </style>
 </head>
 <body>
@@ -220,7 +294,18 @@
 <footer>
   © 2024 Tienda de Productos para Mascotas. Todos los derechos reservados.
 </footer>
-  </form>
+</form>
+
+<div class="modal modal-alerta" id="modalAlerta">
+  <div class="modal-alerta-content">
+    <div class="modal-alerta-header">
+      <h2>Ventas</h2>
+      <span class="close close-alerta" onclick="cerrarModal('modalAlerta')">&times;</span>
+    </div>
+    <div class="modal-body" id="mensajesmodal"></div>
+  </div>
+</div>
+
 </div>
 
 <script>
@@ -232,180 +317,206 @@
 
       // Función para obtener todos los productos
       async function obtenerTodosLosProductos() {
-        try {
-          const response = await fetch(`/api/mascotas/todos`);
-          if (!response.ok) {
-            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+          try {
+              const response = await fetch(`/api/mascotas/todos`);
+              if (!response.ok) {
+                  throw new Error(`Error: ${response.status} - ${response.statusText}`);
+              }
+              const productos = await response.json();
+              llenarSelectProductos(productos);
+          } catch (error) {
+              console.error("Error al obtener productos:", error);
+              document.getElementById("mensajesmodal").innerHTML = `No se pudieron cargar los productos. Intente nuevamente.`;
+              abrirModal('modalAlerta');
           }
-          const productos = await response.json();
-          llenarSelectProductos(productos);
-        } catch (error) {
-          console.error("Error al obtener productos:", error);
-          alert("No se pudieron cargar los productos. Intente nuevamente.");
-        }
       }
 
-function llenarSelectProductos(productos) {
-    // Limpiar las opciones existentes en el select
-    selectProductoVendido.innerHTML = '<option value="" disabled selected>Seleccione un producto</option>';
+      function llenarSelectProductos(productos) {
+          // Limpiar las opciones existentes en el select
+          selectProductoVendido.innerHTML = '<option value="" disabled selected>Seleccione un producto</option>';
 
-    productos.forEach(producto => {
-        const option = document.createElement('option');
-        option.value = producto.id;
-        option.textContent = `${producto.nombre} - ${producto.cantidad || 0} disponibles`;
-        selectProductoVendido.appendChild(option);
-        productosMap.set(producto.id, {
-            nombre: producto.nombre,
-            cantidad: producto.cantidad || 0,
-            precio: producto.precio
-        });
-    });
-}
+          productos.forEach(producto => {
+              const option = document.createElement('option');
+              option.value = producto.id;
+              option.textContent = `${producto.nombre} - ${producto.cantidad || 0} disponibles`;
+              selectProductoVendido.appendChild(option);
+              productosMap.set(producto.id, {
+                  nombre: producto.nombre,
+                  cantidad: producto.cantidad || 0,
+                  precio: producto.precio
+              });
+          });
+      }
 
+      inputProductoCantidad.addEventListener('input', function () {
+          const productoId = parseInt(selectProductoVendido.value);
+          const productoData = productosMap.get(productoId);
+          const cantidadDisponible = productoData ? productoData.cantidad : 0;
+          const cantidadIngresada = parseInt(inputProductoCantidad.value) || 0;
 
-inputProductoCantidad.addEventListener('input', function () {
-    const productoId = parseInt(selectProductoVendido.value);
-    const productoData = productosMap.get(productoId);
-    const cantidadDisponible = productoData ? productoData.cantidad : 0;
-    const cantidadIngresada = parseInt(inputProductoCantidad.value) || 0;
-
-    if (cantidadIngresada > cantidadDisponible) {
-        alert(`Cantidad excedida. Solo hay ${cantidadDisponible} unidades disponibles.`);
-        inputProductoCantidad.value = "";
-    } else {
-        // Calcular y actualizar el precio total
-        const precioTotal = productoData.precio * cantidadIngresada;
-        inputPrecio.value = precioTotal.toFixed(2);
-    }
-});
-
+          if (cantidadIngresada > cantidadDisponible) {
+              document.getElementById("mensajesmodal").innerHTML = `Cantidad excedida. Solo hay ${cantidadDisponible} unidades disponibles.`;
+              abrirModal('modalAlerta');
+              inputProductoCantidad.value = "";
+          } else {
+              // Calcular y actualizar el precio total
+              const precioTotal = productoData.precio * cantidadIngresada;
+              inputPrecio.value = precioTotal.toFixed(2);
+          }
+      });
 
       // Verificar cantidad ingresada
       inputProductoCantidad.addEventListener('input', function () {
-        const productoId = parseInt(selectProductoVendido.value);
-        const productoData = productosMap.get(productoId);
-        const cantidadDisponible = productoData ? productoData.cantidad : 0;
-        const cantidadIngresada = parseInt(inputProductoCantidad.value) || 0;
+          const productoId = parseInt(selectProductoVendido.value);
+          const productoData = productosMap.get(productoId);
+          const cantidadDisponible = productoData ? productoData.cantidad : 0;
+          const cantidadIngresada = parseInt(inputProductoCantidad.value) || 0;
 
-        if (cantidadIngresada > cantidadDisponible) {
-          alert(`Cantidad excedida. Solo hay ${cantidadDisponible} unidades disponibles.`);
-          inputProductoCantidad.value = "";
-        }
+          if (cantidadIngresada > cantidadDisponible) {
+              document.getElementById("mensajesmodal").innerHTML = `Cantidad excedida. Solo hay ${cantidadDisponible} unidades disponibles.`;
+              abrirModal('modalAlerta');
+              inputProductoCantidad.value = "";
+          }
       });
 
-async function registrarVenta(event) {
-    event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+      async function registrarVenta(event) {
+          event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
 
-    const productoId = parseInt(selectProductoVendido.value);
-    const cantidad = parseInt(inputProductoCantidad.value);
-    const precio = parseFloat(inputPrecio.value);
-    const nombreCliente = document.getElementById('nombreCliente').value.trim();
-    const identificacionCliente = document.getElementById('identificacionCliente').value.trim();
-    const nombreMascota = document.getElementById('nombreMascota').value.trim();
-    const razaMascota = document.getElementById('RazaMascota').value.trim();
+          const productoId = parseInt(selectProductoVendido.value);
+          const cantidad = parseInt(inputProductoCantidad.value);
+          const precio = parseFloat(inputPrecio.value);
+          const nombreCliente = document.getElementById('nombreCliente').value.trim();
+          const identificacionCliente = document.getElementById('identificacionCliente').value.trim();
+          const nombreMascota = document.getElementById('nombreMascota').value.trim();
+          const razaMascota = document.getElementById('RazaMascota').value.trim();
 
-    // Validar los datos del formulario
-    if (!productoId || isNaN(cantidad) || cantidad <= 0 || isNaN(precio) || !nombreCliente || !identificacionCliente || !nombreMascota || !razaMascota) {
-        alert("Por favor, complete todos los campos correctamente.");
-        return;
-    }
+          // Validar los datos del formulario
+          if (!productoId || isNaN(cantidad) || cantidad <= 0 || isNaN(precio) || !nombreCliente || !identificacionCliente || !nombreMascota || !razaMascota) {
+              document.getElementById("mensajesmodal").innerHTML = `Por favor, complete todos los campos correctamente.`;
+              abrirModal('modalAlerta');
+              return;
+          }
 
-    // Validar cantidad disponible
-    const productoData = productosMap.get(productoId);
-    if (cantidad > productoData.cantidad) {
-        alert(`Cantidad insuficiente. Solo hay ${productoData.cantidad} disponibles.`);
-        return;
-    }
+          // Validar cantidad disponible
+          const productoData = productosMap.get(productoId);
+          if (cantidad > productoData.cantidad) {
+              document.getElementById("mensajesmodal").innerHTML = `Cantidad insuficiente. Solo hay ${productoData.cantidad} disponibles.`;
+              abrirModal('modalAlerta');
+              return;
+          }
 
-    // Crear el cuerpo de la solicitud para la venta para la ruta original
-    const ventaDataOriginal = {
-        productoId: productoId,
-        cantidad: cantidad
-    };
+          // Crear el cuerpo de la solicitud para la venta para la ruta original
+          const ventaDataOriginal = {
+              productoId: productoId,
+              cantidad: cantidad
+          };
 
-    // Crear el cuerpo de la solicitud para la venta para la nueva ruta /api/ventas/guardar
-    const ventaDataGuardar = {
-        productoId: productoId,
-        cantidad: cantidad,
-        precio: precio,
-        nombre: productoData.nombre
-    };
+          // Crear el cuerpo de la solicitud para la venta para la nueva ruta /api/ventas/guardar
+          const ventaDataGuardar = {
+              productoId: productoId,
+              cantidad: cantidad,
+              precio: precio,
+              nombre: productoData.nombre,
+              totalventa: precio * cantidad
+          };
 
-    // Crear el cuerpo de la solicitud para los datos del cliente
-    const clienteData = {
-        nombreCliente: nombreCliente,
-        identificacionCliente: identificacionCliente,
-        nombreMascota: nombreMascota,
-        razaMascota: razaMascota
-    };
+          // Crear el cuerpo de la solicitud para los datos del cliente
+          const clienteData = {
+              nombreCliente: nombreCliente,
+              identificacionCliente: identificacionCliente,
+              nombreMascota: nombreMascota,
+              razaMascota: razaMascota
+          };
 
-    try {
-        // Registrar la venta en la ruta original
-        const ventaResponseOriginal = await fetch('/api/ventas/venta', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(ventaDataOriginal)
-        });
+          try {
+              // Registrar la venta en la ruta original
+              const ventaResponseOriginal = await fetch('/api/ventas/venta', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(ventaDataOriginal)
+              });
 
-        if (!ventaResponseOriginal.ok) {
-            const ventaError = await ventaResponseOriginal.text();
-            alert("Error al registrar la venta en la ruta original: " + ventaError);
-            return;
-        }
-        const ventaMessage = await ventaResponseOriginal.text();
-        alert("Registro en ruta original exitoso: " + ventaMessage);
+              if (!ventaResponseOriginal.ok) {
+                  const ventaError = await ventaResponseOriginal.text();
+                  document.getElementById("mensajesmodal").innerHTML = `Error al registrar la venta en la ruta original: ${ventaError}`;
+                  abrirModal('modalAlerta');
+                  return;
+              }
+              const ventaMessage = await ventaResponseOriginal.text();
+              //document.getElementById("mensajesmodal").innerHTML = `Registro en ruta original exitoso: ${ventaMessage}`;
+              //abrirModal('modalAlerta');
 
-        // Registrar la venta en la nueva ruta
-        const ventaResponseGuardar = await fetch('/api/ventas/guardar', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(ventaDataGuardar)
-        });
+              // Registrar la venta en la nueva ruta
+              const ventaResponseGuardar = await fetch('/api/ventas/guardar', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(ventaDataGuardar)
+              });
 
-        if (!ventaResponseGuardar.ok) {
-            const guardarError = await ventaResponseGuardar.text();
-            alert("Error al registrar la venta en la ruta guardar: " + guardarError);
-            return;
-        }
-        const guardarMessage = await ventaResponseGuardar.text();
-        alert("Registro en ruta guardar exitoso: " + guardarMessage);
+              if (!ventaResponseGuardar.ok) {
+                  const guardarError = await ventaResponseGuardar.text();
+                  document.getElementById("mensajesmodal").innerHTML = `Error al registrar la venta en la ruta guardar: ${guardarError}`;
+                  abrirModal('modalAlerta');
+                  return;
+              }
+              const guardarMessage = await ventaResponseGuardar.text();
+              //document.getElementById("mensajesmodal").innerHTML = `Registro en ruta guardar exitoso: ${guardarMessage}`;
+              //abrirModal('modalAlerta');
 
-        // Registrar los datos del cliente y su mascota
-        const clienteResponse = await fetch('/api/datoscliente/guardar', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(clienteData)
-        });
+              // Registrar los datos del cliente y su mascota
+              const clienteResponse = await fetch('/api/datoscliente/guardar', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(clienteData)
+              });
 
-        if (!clienteResponse.ok) {
-            const clienteError = await clienteResponse.text();
-            alert("Error al registrar los datos del cliente: " + clienteError);
-            return;
-        }
-        const clienteGuardado = await clienteResponse.json();
-        console.log("Cliente registrado:", clienteGuardado);
+              if (!clienteResponse.ok) {
+                  const clienteError = await clienteResponse.text();
+                  document.getElementById("mensajesmodal").innerHTML = `Error al registrar los datos del cliente: ${clienteError}`;
+                  abrirModal('modalAlerta');
+                  return;
+              }
+              const clienteGuardado = await clienteResponse.json();
+              console.log("Cliente registrado:", clienteGuardado);
 
-        // Actualizar la cantidad disponible en el frontend
-        productoData.cantidad -= cantidad;
-        await obtenerTodosLosProductos(); // Refrescar los productos en el select
-        document.getElementById('ventaForm').reset(); // Limpiar el formulario
+              // Actualizar la cantidad disponible en el frontend
+              productoData.cantidad -= cantidad;
+              await obtenerTodosLosProductos(); // Refrescar los productos en el select
+              document.getElementById('ventaForm').reset(); // Limpiar el formulario
 
-    } catch (error) {
-        console.error("Error al registrar la venta o los datos del cliente:", error);
-        alert("Ocurrió un error al procesar la solicitud. Por favor, intente nuevamente.");
-    }
-}
+              document.getElementById("mensajesmodal").innerHTML = `¡Compra exitosa! Gracias por su compra.`;
+              abrirModal('modalAlerta');
 
-
-
+          } catch (error) {
+              console.error("Error al registrar la venta o los datos del cliente:", error);
+              document.getElementById("mensajesmodal").innerHTML = `Ocurrió un error al procesar la solicitud. Por favor, intente nuevamente.`;
+              abrirModal('modalAlerta');
+          }
+      }
 
       // Asignar evento de envío al formulario
       document.getElementById('ventaForm').addEventListener('submit', registrarVenta);
 
       // Llamar a la función al cargar la página
       obtenerTodosLosProductos();
-    });
+  });
 
+  function abrirModal(modalId) {
+      document.getElementById(modalId).style.display = "flex";
+  }
+
+  function cerrarModal(modalId) {
+      document.getElementById(modalId).style.display = "none";
+  }
+
+  window.onclick = function (event) {
+      const modals = document.querySelectorAll('.modal');
+      modals.forEach(modal => {
+          if (event.target === modal) {
+              cerrarModal(modal.id);
+          }
+      });
+  };
 
 </script>
 </body>
